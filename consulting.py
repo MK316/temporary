@@ -173,7 +173,7 @@ else:
     hw_cols = ["HW01", "HW02", "HW03", "HW04", "HW05"]
     grade_data = {
         "Item":  ["Midterm"] + hw_cols + ["HW-Song-extra"],
-        "Score": [row["Midterm"]] + [row[h] for h in hw_cols] + [row["HW-Song-extra"]],
+        "Score": [row["Midterm"]] + [row[h] for h in hw_cols] + [f"{pd.to_numeric(row['HW-Song-extra'], errors='coerce'):.1f}"],
     }
     grade_df = pd.DataFrame(grade_data)
 
