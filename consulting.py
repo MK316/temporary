@@ -57,7 +57,12 @@ DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/da
 
 @st.cache_data(ttl=300)
 def load_data():
-    return pd.read_csv(DATA_URL)
+    import requests
+    from io import StringIO
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = requests.get(DATA_URL, headers=headers)
+    response.raise_for_status()
+    return pd.read_csv(StringIO(response.text))
 
 df = load_data()
 
@@ -211,7 +216,8 @@ else:
             colors      = [rating_color(v) for v in values]
             txt_colors  = [text_color(c) for c in colors]
 
-            fig, ax = plt.subplots(figsize=(len(cols) * 1.35, 1.6))
+            cell_w = 1.35  # fixed cell width — same across all groups
+            fig, ax = plt.subplots(figsize=(len(cols) * cell_w, 1.6))
             fig.patch.set_facecolor("#f7f5f2")
             ax.set_facecolor("#f7f5f2")
 
@@ -232,7 +238,10 @@ else:
             ax.set_ylim(-0.05, 0.9)
             ax.axis("off")
             plt.tight_layout(pad=0.2)
-            st.pyplot(fig, use_container_width=True)
+            # Render at natural size (no stretching) by left-aligning in a column
+            col_fig, _ = st.columns([len(cols), max(1, 8 - len(cols))])
+            with col_fig:
+                st.pyplot(fig, use_container_width=True)
             plt.close(fig)
 
             legend_html = "<div style='display:flex; gap:8px; flex-wrap:wrap; margin:-8px 0 16px 0;'>"
