@@ -89,7 +89,7 @@ labels = df["_label"].tolist()
 st.markdown("## 🎙️ Pronunciation Assessment Dashboard")
 st.markdown("---")
 
-selected_label = st.selectbox("학생 선택 (SID · Meeting · Name)", labels)
+selected_label = st.selectbox("Select Student (SID · Meeting · Name)", labels)
 row = df[df["_label"] == selected_label].iloc[0]
 
 is_later = str(row.get("Notes", "")).strip() == "Later"
@@ -103,12 +103,12 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── 1. Grades table ───────────────────────────────────────────────────────────
-st.markdown("### 📋 성적")
+st.markdown("### 📋 Scores")
 
 hw_cols = ["HW01", "HW02", "HW03", "HW04", "HW05"]
 grade_data = {
-    "항목": ["Midterm"] + hw_cols + ["HW-Song-extra"],
-    "값":   [row["Midterm"]] + [row[h] for h in hw_cols] + [row["HW-Song-extra"]],
+    "Item":  ["Midterm"] + hw_cols + ["HW-Song-extra"],
+    "Score": [row["Midterm"]] + [row[h] for h in hw_cols] + [row["HW-Song-extra"]],
 }
 grade_df = pd.DataFrame(grade_data)
 
@@ -121,7 +121,7 @@ def style_grade(v):
 
 styled = (
     grade_df.style
-    .map(style_grade, subset=["값"])
+    .map(style_grade, subset=["Score"])
     .set_properties(**{"text-align": "center"})
     .set_table_styles([
         {"selector": "th", "props": [
@@ -136,7 +136,7 @@ st.dataframe(styled, use_container_width=True, hide_index=True)
 st.markdown("---")
 
 if is_later:
-    st.info("⏳ 이 학생의 발음 평가 데이터는 아직 입력되지 않았습니다 (Later).")
+    st.info("⏳ Pronunciation assessment data for this student has not been entered yet (scheduled for a later session).")
 else:
     # ── 2. Feature heatmaps ────────────────────────────────────────────────────
     def draw_heatmap(title, cols, row_data, emoji):
@@ -178,34 +178,35 @@ else:
                 f"<span style='background:{bg}; color:{tc}; padding:2px 10px; "
                 f"border-radius:12px; font-size:0.75rem; font-weight:600;'>{r}</span>"
             )
+        legend_html += " &nbsp;<span style='font-size:0.75rem; color:#888;'>L = Low &nbsp;|&nbsp; ML = Mid-Low &nbsp;|&nbsp; M = Mid &nbsp;|&nbsp; MH = Mid-High &nbsp;|&nbsp; H = High</span>"
         legend_html += "</div>"
         st.markdown(legend_html, unsafe_allow_html=True)
 
-    draw_heatmap("모음 (Vowels)", V_COLS, row, "🔵")
-    draw_heatmap("자음 (Consonants)", C_COLS, row, "🟠")
-    draw_heatmap("운율 (Prosody)", P_COLS, row, "🟢")
+    draw_heatmap("Vowels", V_COLS, row, "🔵")
+    draw_heatmap("Consonants", C_COLS, row, "🟠")
+    draw_heatmap("Prosody", P_COLS, row, "🟢")
 
     st.markdown("---")
 
     # ── 3. Notes ───────────────────────────────────────────────────────────────
-    st.markdown("### 📝 Notes")
+    st.markdown("### 📝 Instructor Notes")
     notes_text = str(row["Notes"]).strip() if pd.notna(row["Notes"]) and str(row["Notes"]).strip() not in ("", "Later") else ""
     if notes_text:
         st.markdown(f"<div class='notes-box'>{notes_text}</div>", unsafe_allow_html=True)
     else:
-        st.markdown("_노트 없음_")
+        st.markdown("_No notes recorded._")
 
     st.markdown("---")
 
     # ── 4. Radar chart ─────────────────────────────────────────────────────────
-    st.markdown("### 📡 발음 평가 (Accuracy / Fluency / Intelligibility)")
+    st.markdown("### 📡 Overall Pronunciation Profile")
 
-    acc  = float(row["Accuracy"])
-    flu  = float(row["Fluency"])
+    acc   = float(row["Accuracy"])
+    flu   = float(row["Fluency"])
     intel = float(row["Intelligibility"])
 
     if acc == 0 and flu == 0 and intel == 0:
-        st.info("⏳ 평가 점수가 아직 입력되지 않았습니다.")
+        st.info("⏳ Assessment scores have not been entered yet.")
     else:
         radar_labels = ["Accuracy", "Fluency", "Intelligibility"]
         radar_values = [acc, flu, intel]
