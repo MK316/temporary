@@ -256,9 +256,9 @@ else:
             legend_html += "</div>"
             st.markdown(legend_html, unsafe_allow_html=True)
 
-        draw_heatmap("Vowels", V_COLS, row, "🔵")
-        draw_heatmap("Consonants", C_COLS, row, "🟠")
-        draw_heatmap("Prosody", P_COLS, row, "🟢")
+        draw_heatmap("Vowels", V_COLS, row, "🔆")
+        draw_heatmap("Consonants", C_COLS, row, "🔆")
+        draw_heatmap("Prosody", P_COLS, row, "🔆")
 
         st.markdown("---")
 
@@ -273,7 +273,7 @@ else:
         st.markdown("---")
 
         # ── 4. Radar chart ─────────────────────────────────────────────────────
-        st.markdown("### 📡 Overall Pronunciation Profile")
+        st.markdown("### 🍃 Overall Pronunciation Profile")
 
         acc   = float(row["Accuracy"])
         flu   = float(row["Fluency"])
