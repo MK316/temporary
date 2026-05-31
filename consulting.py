@@ -121,7 +121,7 @@ def style_grade(v):
 
 styled = (
     grade_df.style
-    .applymap(style_grade, subset=["값"])
+    .map(style_grade, subset=["값"])
     .set_properties(**{"text-align": "center"})
     .set_table_styles([
         {"selector": "th", "props": [
