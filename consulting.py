@@ -109,7 +109,7 @@ if not st.session_state.authenticated:
     with col_c:
         st.markdown("""
         <div style='text-align:center; margin-bottom: 32px;'>
-          <div style='font-size:3rem;'>🎙️</div>
+          <div style='font-size:3rem;'>🌱</div>
           <div style='font-family:"DM Serif Display",serif; font-size:1.9rem;
                       color:#1a1a2e; margin: 8px 0 6px 0;'>
             Pronunciation Assessment
