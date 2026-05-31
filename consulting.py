@@ -37,10 +37,17 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
     padding: 16px 20px; border-radius: 0 8px 8px 0;
     color: #333; font-size: 0.95rem; line-height: 1.7; margin-top: 8px;
 }
-.later-box {
-    background: #fff8e1; border-left: 4px solid #ffc107;
-    padding: 16px 20px; border-radius: 0 8px 8px 0;
-    color: #856404; font-size: 0.95rem; line-height: 1.7; margin-top: 8px;
+/* Passcode entry screen */
+.passcode-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 60px 20px;
+}
+.passcode-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem; color: #1a1a2e; margin-bottom: 8px; text-align: center;
+}
+.passcode-sub {
+    font-size: 0.9rem; color: #888; margin-bottom: 32px; text-align: center;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -50,8 +57,7 @@ DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/da
 
 @st.cache_data(ttl=300)
 def load_data():
-    df = pd.read_csv(DATA_URL)
-    return df
+    return pd.read_csv(DATA_URL)
 
 df = load_data()
 
@@ -82,161 +88,219 @@ def text_color(bg_hex):
     lum = 0.299*r + 0.587*g + 0.114*b
     return "#1a1a2e" if lum > 0.5 else "#ffffff"
 
-# ── Dropdown ─────────────────────────────────────────────────────────────────
-df["_label"] = df["SID"].astype(str) + " · " + df["Meeting"] + " · " + df["Name"]
-labels = df["_label"].tolist()
+# ── Session state ─────────────────────────────────────────────────────────────
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "student_row" not in st.session_state:
+    st.session_state.student_row = None
 
-st.markdown("## 🎙️ Pronunciation Assessment Dashboard")
-st.markdown("---")
+# ══════════════════════════════════════════════════════════════════════════════
+# SCREEN 1 — Passcode Entry
+# ══════════════════════════════════════════════════════════════════════════════
+if not st.session_state.authenticated:
 
-selected_label = st.selectbox("Select Student (SID · Meeting · Name)", labels)
-row = df[df["_label"] == selected_label].iloc[0]
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    col_l, col_c, col_r = st.columns([1, 1.6, 1])
+    with col_c:
+        st.markdown("""
+        <div style='text-align:center; margin-bottom: 32px;'>
+          <div style='font-size:3rem;'>🎙️</div>
+          <div style='font-family:"DM Serif Display",serif; font-size:1.9rem;
+                      color:#1a1a2e; margin: 8px 0 6px 0;'>
+            Pronunciation Assessment
+          </div>
+          <div style='font-size:0.9rem; color:#999; letter-spacing:0.05em;'>
+            Enter your passcode to view your feedback
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-is_later = str(row.get("Notes", "")).strip() == "Later"
+        passcode_input = st.text_input(
+            "Passcode",
+            placeholder="e.g.  sunshine42",
+            label_visibility="collapsed",
+            key="passcode_field"
+        )
 
-st.markdown(f"""
-<div style='margin: 20px 0 28px 0;'>
-  <div class='section-label'>Selected Student</div>
-  <div class='student-name'>{row['Name']}</div>
-  <span class='meeting-badge'>{row['Meeting']}</span>
-</div>
-""", unsafe_allow_html=True)
+        submitted = st.button("Enter →", use_container_width=True, type="primary")
 
-# ── 1. Grades table ───────────────────────────────────────────────────────────
-st.markdown("### 📋 Scores")
+        if submitted:
+            if not passcode_input.strip():
+                st.warning("Please enter your passcode.")
+            elif "Passcode" not in df.columns:
+                st.error("⚠️ Passcode column not found in the data. Please check the CSV.")
+            else:
+                entered = passcode_input.strip().lower()
+                match = df[df["Passcode"].astype(str).str.strip().str.lower() == entered]
+                if len(match) == 0:
+                    st.error("❌ Passcode not recognized. Please try again.")
+                else:
+                    st.session_state.authenticated = True
+                    st.session_state.student_row = match.iloc[0]
+                    st.rerun()
 
-hw_cols = ["HW01", "HW02", "HW03", "HW04", "HW05"]
-grade_data = {
-    "Item":  ["Midterm"] + hw_cols + ["HW-Song-extra"],
-    "Score": [row["Midterm"]] + [row[h] for h in hw_cols] + [row["HW-Song-extra"]],
-}
-grade_df = pd.DataFrame(grade_data)
-
-def style_grade(v):
-    if v == "Completed":
-        return "background-color:#d4edda; color:#155724; font-weight:500;"
-    elif isinstance(v, str) and v not in ("Completed",):
-        return "background-color:#f8d7da; color:#721c24;"
-    return ""
-
-styled = (
-    grade_df.style
-    .map(style_grade, subset=["Score"])
-    .set_properties(**{"text-align": "center"})
-    .set_table_styles([
-        {"selector": "th", "props": [
-            ("background-color", "#1a1a2e"), ("color", "#f7f5f2"),
-            ("font-size", "0.8rem"), ("letter-spacing", "0.06em"), ("text-align", "center")
-        ]},
-        {"selector": "td", "props": [("font-size", "0.95rem"), ("padding", "8px 16px")]},
-    ])
-)
-st.dataframe(styled, use_container_width=True, hide_index=True)
-
-st.markdown("---")
-
-if is_later:
-    st.info("⏳ Pronunciation assessment data for this student has not been entered yet (scheduled for a later session).")
+# ══════════════════════════════════════════════════════════════════════════════
+# SCREEN 2 — Student Dashboard
+# ══════════════════════════════════════════════════════════════════════════════
 else:
-    # ── 2. Feature heatmaps ────────────────────────────────────────────────────
-    def draw_heatmap(title, cols, row_data, emoji):
-        st.markdown(f"### {emoji} {title}")
-        labels_list = [c.split("-", 1)[1] for c in cols]
-        values      = [str(row_data[c]).strip() for c in cols]
-        colors      = [rating_color(v) for v in values]
-        txt_colors  = [text_color(c) for c in colors]
+    row = st.session_state.student_row
+    is_later = str(row.get("Notes", "")).strip() == "Later"
 
-        fig, ax = plt.subplots(figsize=(len(cols) * 1.35, 1.6))
-        fig.patch.set_facecolor("#f7f5f2")
-        ax.set_facecolor("#f7f5f2")
-
-        for i, (lbl, val, bg, tc) in enumerate(zip(labels_list, values, colors, txt_colors)):
-            rect = mpatches.FancyBboxPatch(
-                (i, 0), 0.88, 0.78,
-                boxstyle="round,pad=0.05",
-                linewidth=0,
-                facecolor=bg,
-            )
-            ax.add_patch(rect)
-            ax.text(i + 0.44, 0.6,  val, ha="center", va="center",
-                    fontsize=13, fontweight="bold", color=tc)
-            ax.text(i + 0.44, 0.18, lbl, ha="center", va="center",
-                    fontsize=7.5, color="#555")
-
-        ax.set_xlim(-0.1, len(cols))
-        ax.set_ylim(-0.05, 0.9)
-        ax.axis("off")
-        plt.tight_layout(pad=0.2)
-        st.pyplot(fig, use_container_width=True)
-        plt.close(fig)
-
-        legend_html = "<div style='display:flex; gap:8px; flex-wrap:wrap; margin:-8px 0 16px 0;'>"
-        for r in RATING_ORDER:
-            bg = rating_color(r)
-            tc = text_color(bg)
-            legend_html += (
-                f"<span style='background:{bg}; color:{tc}; padding:2px 10px; "
-                f"border-radius:12px; font-size:0.75rem; font-weight:600;'>{r}</span>"
-            )
-        legend_html += " &nbsp;<span style='font-size:0.75rem; color:#888;'>L = Low &nbsp;|&nbsp; ML = Mid-Low &nbsp;|&nbsp; M = Mid &nbsp;|&nbsp; MH = Mid-High &nbsp;|&nbsp; H = High</span>"
-        legend_html += "</div>"
-        st.markdown(legend_html, unsafe_allow_html=True)
-
-    draw_heatmap("Vowels", V_COLS, row, "🔵")
-    draw_heatmap("Consonants", C_COLS, row, "🟠")
-    draw_heatmap("Prosody", P_COLS, row, "🟢")
+    # Header + logout button
+    col_title, col_btn = st.columns([5, 1])
+    with col_title:
+        st.markdown("## 🎙️ Pronunciation Assessment Dashboard")
+    with col_btn:
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🔒 Log out"):
+            st.session_state.authenticated = False
+            st.session_state.student_row = None
+            st.rerun()
 
     st.markdown("---")
 
-    # ── 3. Notes ───────────────────────────────────────────────────────────────
-    st.markdown("### 📝 Instructor Notes")
-    notes_text = str(row["Notes"]).strip() if pd.notna(row["Notes"]) and str(row["Notes"]).strip() not in ("", "Later") else ""
-    if notes_text:
-        st.markdown(f"<div class='notes-box'>{notes_text}</div>", unsafe_allow_html=True)
-    else:
-        st.markdown("_No notes recorded._")
+    st.markdown(f"""
+    <div style='margin: 20px 0 28px 0;'>
+      <div class='section-label'>Selected Student</div>
+      <div class='student-name'>{row['Name']}</div>
+      <span class='meeting-badge'>{row['Meeting']}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── 1. Scores table ───────────────────────────────────────────────────────
+    st.markdown("### 📋 Scores")
+
+    hw_cols = ["HW01", "HW02", "HW03", "HW04", "HW05"]
+    grade_data = {
+        "Item":  ["Midterm"] + hw_cols + ["HW-Song-extra"],
+        "Score": [row["Midterm"]] + [row[h] for h in hw_cols] + [row["HW-Song-extra"]],
+    }
+    grade_df = pd.DataFrame(grade_data)
+
+    def style_grade(v):
+        if v == "Completed":
+            return "background-color:#d4edda; color:#155724; font-weight:500;"
+        elif isinstance(v, str) and v != "Completed":
+            return "background-color:#f8d7da; color:#721c24;"
+        return ""
+
+    styled = (
+        grade_df.style
+        .map(style_grade, subset=["Score"])
+        .set_properties(**{"text-align": "center"})
+        .set_table_styles([
+            {"selector": "th", "props": [
+                ("background-color", "#1a1a2e"), ("color", "#f7f5f2"),
+                ("font-size", "0.8rem"), ("letter-spacing", "0.06em"), ("text-align", "center")
+            ]},
+            {"selector": "td", "props": [("font-size", "0.95rem"), ("padding", "8px 16px")]},
+        ])
+    )
+    st.dataframe(styled, use_container_width=True, hide_index=True)
 
     st.markdown("---")
 
-    # ── 4. Radar chart ─────────────────────────────────────────────────────────
-    st.markdown("### 📡 Overall Pronunciation Profile")
-
-    acc   = float(row["Accuracy"])
-    flu   = float(row["Fluency"])
-    intel = float(row["Intelligibility"])
-
-    if acc == 0 and flu == 0 and intel == 0:
-        st.info("⏳ Assessment scores have not been entered yet.")
+    if is_later:
+        st.info("⏳ Pronunciation assessment data for this student has not been entered yet (scheduled for a later session).")
     else:
-        radar_labels = ["Accuracy", "Fluency", "Intelligibility"]
-        radar_values = [acc, flu, intel]
+        # ── 2. Feature heatmaps ──────────────────────────────────────────────
+        def draw_heatmap(title, cols, row_data, emoji):
+            st.markdown(f"### {emoji} {title}")
+            labels_list = [c.split("-", 1)[1] for c in cols]
+            values      = [str(row_data[c]).strip() for c in cols]
+            colors      = [rating_color(v) for v in values]
+            txt_colors  = [text_color(c) for c in colors]
 
-        angles      = np.linspace(0, 2 * np.pi, 3, endpoint=False).tolist()
-        values_plot = radar_values + [radar_values[0]]
-        angles_plot = angles + [angles[0]]
+            fig, ax = plt.subplots(figsize=(len(cols) * 1.35, 1.6))
+            fig.patch.set_facecolor("#f7f5f2")
+            ax.set_facecolor("#f7f5f2")
 
-        fig, ax = plt.subplots(figsize=(4.5, 4.5), subplot_kw=dict(polar=True))
-        fig.patch.set_facecolor("#f7f5f2")
-        ax.set_facecolor("#f7f5f2")
+            for i, (lbl, val, bg, tc) in enumerate(zip(labels_list, values, colors, txt_colors)):
+                rect = mpatches.FancyBboxPatch(
+                    (i, 0), 0.88, 0.78,
+                    boxstyle="round,pad=0.05",
+                    linewidth=0, facecolor=bg,
+                )
+                ax.add_patch(rect)
+                ax.text(i + 0.44, 0.6,  val, ha="center", va="center",
+                        fontsize=13, fontweight="bold", color=tc)
+                ax.text(i + 0.44, 0.18, lbl, ha="center", va="center",
+                        fontsize=7.5, color="#555")
 
-        for r in [20, 40, 60, 80, 100]:
-            ring_v = [r] * 3 + [r]
-            ax.plot(angles_plot, ring_v, color="#cccccc", linewidth=0.6, linestyle="--", zorder=1)
-
-        ax.fill(angles_plot, values_plot, color="#1f77b4", alpha=0.25, zorder=2)
-        ax.plot(angles_plot, values_plot, color="#1f77b4", linewidth=2.5, zorder=3)
-        ax.scatter(angles, radar_values, s=70, color="#1a1a2e", zorder=4)
-
-        for angle, lbl, val in zip(angles, radar_labels, radar_values):
-            ax.text(angle, val + 12, f"{lbl}\n{int(val)}", ha="center", va="center",
-                    fontsize=9.5, fontweight="600", color="#1a1a2e")
-
-        ax.set_ylim(0, 115)
-        ax.set_yticks([])
-        ax.set_xticks([])
-        ax.spines["polar"].set_visible(False)
-
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
+            ax.set_xlim(-0.1, len(cols))
+            ax.set_ylim(-0.05, 0.9)
+            ax.axis("off")
+            plt.tight_layout(pad=0.2)
             st.pyplot(fig, use_container_width=True)
-        plt.close(fig)
+            plt.close(fig)
+
+            legend_html = "<div style='display:flex; gap:8px; flex-wrap:wrap; margin:-8px 0 16px 0;'>"
+            for r in RATING_ORDER:
+                bg = rating_color(r)
+                tc = text_color(bg)
+                legend_html += (
+                    f"<span style='background:{bg}; color:{tc}; padding:2px 10px; "
+                    f"border-radius:12px; font-size:0.75rem; font-weight:600;'>{r}</span>"
+                )
+            legend_html += "&nbsp;<span style='font-size:0.75rem; color:#888;'>L = Low &nbsp;|&nbsp; ML = Mid-Low &nbsp;|&nbsp; M = Mid &nbsp;|&nbsp; MH = Mid-High &nbsp;|&nbsp; H = High</span>"
+            legend_html += "</div>"
+            st.markdown(legend_html, unsafe_allow_html=True)
+
+        draw_heatmap("Vowels", V_COLS, row, "🔵")
+        draw_heatmap("Consonants", C_COLS, row, "🟠")
+        draw_heatmap("Prosody", P_COLS, row, "🟢")
+
+        st.markdown("---")
+
+        # ── 3. Notes ──────────────────────────────────────────────────────────
+        st.markdown("### 📝 Instructor Notes")
+        notes_text = str(row["Notes"]).strip() if pd.notna(row["Notes"]) and str(row["Notes"]).strip() not in ("", "Later") else ""
+        if notes_text:
+            st.markdown(f"<div class='notes-box'>{notes_text}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("_No notes recorded._")
+
+        st.markdown("---")
+
+        # ── 4. Radar chart ─────────────────────────────────────────────────────
+        st.markdown("### 📡 Overall Pronunciation Profile")
+
+        acc   = float(row["Accuracy"])
+        flu   = float(row["Fluency"])
+        intel = float(row["Intelligibility"])
+
+        if acc == 0 and flu == 0 and intel == 0:
+            st.info("⏳ Assessment scores have not been entered yet.")
+        else:
+            radar_labels = ["Accuracy", "Fluency", "Intelligibility"]
+            radar_values = [acc, flu, intel]
+
+            angles      = np.linspace(0, 2 * np.pi, 3, endpoint=False).tolist()
+            values_plot = radar_values + [radar_values[0]]
+            angles_plot = angles + [angles[0]]
+
+            fig, ax = plt.subplots(figsize=(4.5, 4.5), subplot_kw=dict(polar=True))
+            fig.patch.set_facecolor("#f7f5f2")
+            ax.set_facecolor("#f7f5f2")
+
+            for r in [20, 40, 60, 80, 100]:
+                ring_v = [r] * 3 + [r]
+                ax.plot(angles_plot, ring_v, color="#cccccc", linewidth=0.6, linestyle="--", zorder=1)
+
+            ax.fill(angles_plot, values_plot, color="#1f77b4", alpha=0.25, zorder=2)
+            ax.plot(angles_plot, values_plot, color="#1f77b4", linewidth=2.5, zorder=3)
+            ax.scatter(angles, radar_values, s=70, color="#1a1a2e", zorder=4)
+
+            for angle, lbl, val in zip(angles, radar_labels, radar_values):
+                ax.text(angle, val + 12, f"{lbl}\n{int(val)}", ha="center", va="center",
+                        fontsize=9.5, fontweight="600", color="#1a1a2e")
+
+            ax.set_ylim(0, 115)
+            ax.set_yticks([])
+            ax.set_xticks([])
+            ax.spines["polar"].set_visible(False)
+
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.pyplot(fig, use_container_width=True)
+            plt.close(fig)
