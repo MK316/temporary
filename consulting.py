@@ -223,9 +223,10 @@ else:
                 )
                 ax.add_patch(rect)
                 ax.text(i + 0.44, 0.6,  val, ha="center", va="center",
-                        fontsize=13, fontweight="bold", color=tc)
+                        fontsize=13, fontweight="bold", color="#ffffff")
+                lbl_color = "#ffdd57" if text_color(bg) == "#ffffff" else "#444444"
                 ax.text(i + 0.44, 0.18, lbl, ha="center", va="center",
-                        fontsize=7.5, color="#555")
+                        fontsize=7.5, color=lbl_color, fontweight="600")
 
             ax.set_xlim(-0.1, len(cols))
             ax.set_ylim(-0.05, 0.9)
