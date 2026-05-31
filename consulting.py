@@ -55,7 +55,7 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
 """, unsafe_allow_html=True)
 
 # ── Data ────────────────────────────────────────────────────────────────────
-DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/consulting-260531-updated.csv"
+DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/consulting-260531-final.csv"
 
 @st.cache_data(ttl=0)
 def load_data():
