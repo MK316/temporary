@@ -166,13 +166,13 @@ def generate_pdf(row):
         ax.set_xlim(-0.1, n * 1.1)
         ax.set_ylim(0, 1)
         ax.axis("off")
-        ax.set_title(title, color="#1a1a2e", loc="left", pad=3, **kw(8, "bold", **kw(8, "normal")))
+        ax.set_title(title, color="#1a1a2e", loc="left", pad=3, **kw(8, "bold"))
 
     # ── Row 0: Scores table (left) + Radar chart (right, spans rows 0-2) ─────
     ax_scores = fig.add_subplot(gs[0:2, 0])
     ax_scores.set_facecolor(BG)
     ax_scores.axis("off")
-    ax_scores.set_title("Scores", color="#1a1a2e", loc="left", pad=3, **kw(8, "bold", **kw(8, "normal")))
+    ax_scores.set_title("Scores", color="#1a1a2e", loc="left", pad=3, **kw(8, "bold"))
 
     score_items  = ["Midterm"] + hw_cols + ["HW-Song-extra"]
     score_values = [str(row["Midterm"])] + \
