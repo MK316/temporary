@@ -8,7 +8,18 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib
 import io
-matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'Noto Sans CJK KR', 'sans-serif']
+# ── Korean font: extract TTF from TTC for matplotlib PDF backend ────────────
+import os, tempfile
+_KO_TTF = os.path.join(tempfile.gettempdir(), "NotoSansCJKKR-Regular.ttf")
+if not os.path.exists(_KO_TTF):
+    try:
+        from fontTools.ttLib import TTCollection
+        _ttc = TTCollection("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc")
+        _ttc.fonts[1].save(_KO_TTF)
+    except Exception:
+        _KO_TTF = None
+
+matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'sans-serif']
 
 st.set_page_config(
     page_title="Pronunciation Assessment Dashboard",
