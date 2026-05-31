@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib
 import io
-matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'NanumGothic', 'sans-serif']
+matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'Noto Sans CJK KR', 'sans-serif']
 
 st.set_page_config(
     page_title="Pronunciation Assessment Dashboard",
@@ -106,6 +106,13 @@ if "student_row" not in st.session_state:
 # ══════════════════════════════════════════════════════════════════════════════
 def generate_pdf(row):
     """Generate a one-page PDF report and return as bytes."""
+    from matplotlib import font_manager as fm
+
+    # Korean font setup
+    ko_font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+    ko_font = fm.FontProperties(fname=ko_font_path)
+    ko_bold = fm.FontProperties(fname="/usr/share/fonts/opentype/noto/NotoSansCJK-Black.ttc")
+
     hw_cols = ["HW01", "HW02", "HW03", "HW04", "HW05"]
     acc   = float(row["Accuracy"])
     flu   = float(row["Fluency"])
@@ -120,18 +127,25 @@ def generate_pdf(row):
         6, 2,
         figure=fig,
         left=0.05, right=0.97,
-        top=0.91, bottom=0.05,
+        top=0.88, bottom=0.05,
         hspace=0.55, wspace=0.12
     )
 
     BG = "#f7f5f2"
 
     # ── Header ────────────────────────────────────────────────────────────────
-    fig.text(0.05, 0.96, "🌱 Pronunciation Assessment Report",
+    fig.text(0.05, 0.96, "Pronunciation Assessment Report",
              fontsize=15, fontweight="bold", color="#1a1a2e", va="top")
-    fig.text(0.05, 0.925, f"Student: {row['Name']}   |   Meeting: {row['Meeting']}   |   Midterm: {row['Midterm']}",
+    # Combine into single string: label in DejaVu, name in Noto CJK
+    fig.text(0.05, 0.915,
+             f"Student: ",
              fontsize=9, color="#555", va="top")
-    fig.add_artist(plt.Line2D([0.05, 0.97], [0.915, 0.915],
+    fig.text(0.122, 0.915, str(row['Name']),
+             fontsize=9, color="#555", va="top", fontproperties=ko_font)
+    fig.text(0.195, 0.915,
+             f"  |  Meeting: {row['Meeting']}  |  Midterm: {row['Midterm']}",
+             fontsize=9, color="#555", va="top")
+    fig.add_artist(plt.Line2D([0.05, 0.97], [0.895, 0.895],
                               transform=fig.transFigure, color="#1a1a2e", linewidth=1))
 
     # ── Helper: draw a heatmap row in a given axes ────────────────────────────
@@ -151,22 +165,25 @@ def generate_pdf(row):
             )
             ax.add_patch(rect)
             ax.text(i * 1.1 + 0.475, 0.58, val,
-                    ha="center", va="center", fontsize=9, fontweight="bold", color="#ffffff")
+                    ha="center", va="center", fontsize=9, fontweight="bold", color="#ffffff",
+                    fontproperties=ko_font)
             lbl_color = "#ffdd57" if text_color(bg) == "#ffffff" else "#444"
             ax.text(i * 1.1 + 0.475, 0.18, lbl,
-                    ha="center", va="center", fontsize=5.5, color=lbl_color, fontweight="600")
+                    ha="center", va="center", fontsize=5.5, color=lbl_color, fontweight="600",
+                    fontproperties=ko_font)
 
         ax.set_xlim(-0.1, n * 1.1)
         ax.set_ylim(0, 1)
         ax.axis("off")
         ax.set_title(title, fontsize=8, fontweight="bold", color="#1a1a2e",
-                     loc="left", pad=3)
+                     loc="left", pad=3, fontproperties=ko_font)
 
     # ── Row 0: Scores table (left) + Radar chart (right, spans rows 0-2) ─────
     ax_scores = fig.add_subplot(gs[0:2, 0])
     ax_scores.set_facecolor(BG)
     ax_scores.axis("off")
-    ax_scores.set_title("Scores", fontsize=8, fontweight="bold", color="#1a1a2e", loc="left", pad=3)
+    ax_scores.set_title("Scores", fontsize=8, fontweight="bold", color="#1a1a2e", loc="left", pad=3,
+                       fontproperties=ko_font)
 
     score_items  = ["Midterm"] + hw_cols + ["HW-Song-extra"]
     score_values = [str(row["Midterm"])] + \
@@ -232,7 +249,8 @@ def generate_pdf(row):
         ax_radar.set_xticks([])
         ax_radar.spines["polar"].set_visible(False)
         ax_radar.set_title("Overall Pronunciation Profile",
-                           fontsize=8, fontweight="bold", color="#1a1a2e", pad=10)
+                           fontsize=8, fontweight="bold", color="#1a1a2e", pad=10,
+                           fontproperties=ko_font)
 
     # ── Heatmap rows ──────────────────────────────────────────────────────────
     ax_v = fig.add_subplot(gs[2, 0])
@@ -248,7 +266,8 @@ def generate_pdf(row):
     ax_leg = fig.add_subplot(gs[3:5, 1])
     ax_leg.set_facecolor(BG)
     ax_leg.axis("off")
-    ax_leg.set_title("Rating Scale", fontsize=8, fontweight="bold", color="#1a1a2e", loc="left", pad=3)
+    ax_leg.set_title("Rating Scale", fontsize=8, fontweight="bold", color="#1a1a2e", loc="left", pad=3,
+                     fontproperties=ko_font)
     legend_labels = {"L": "Low", "ML": "Mid-Low", "M": "Mid", "MH": "Mid-High", "H": "High"}
     for idx, (rating, desc) in enumerate(legend_labels.items()):
         bg = rating_color(rating)
@@ -265,13 +284,11 @@ def generate_pdf(row):
                     color=tc, transform=ax_leg.transAxes)
         ax_leg.text(0.30, 0.675 - idx * 0.14, desc,
                     ha="left", va="center", fontsize=7,
-                    color="#333", transform=ax_leg.transAxes)
+                    color="#333", transform=ax_leg.transAxes, fontproperties=ko_font)
 
     # ── Notes ─────────────────────────────────────────────────────────────────
     ax_notes = fig.add_subplot(gs[5, :])
     ax_notes.set_facecolor("#fffdf5")
-    ax_notes.set_title("Instructor Notes", fontsize=8, fontweight="bold",
-                        color="#1a1a2e", loc="left", pad=3)
     ax_notes.axis("off")
     ax_notes.add_patch(mpatches.FancyBboxPatch(
         (0, 0), 1, 1, boxstyle="round,pad=0.01",
@@ -280,7 +297,10 @@ def generate_pdf(row):
     ))
     ax_notes.text(0.01, 0.5, notes_text,
                   ha="left", va="center", fontsize=8,
-                  color="#333", transform=ax_notes.transAxes, wrap=True)
+                  color="#333", transform=ax_notes.transAxes, wrap=True,
+                  fontproperties=ko_font)
+    ax_notes.set_title("Instructor Notes", fontsize=8, fontweight="bold",
+                        color="#1a1a2e", loc="left", pad=3, fontproperties=ko_font)
 
     # ── Save to bytes ─────────────────────────────────────────────────────────
     buf = io.BytesIO()
