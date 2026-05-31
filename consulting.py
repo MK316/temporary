@@ -8,17 +8,6 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib
 import io
-# ── Korean font: extract TTF from TTC for matplotlib PDF backend ────────────
-import os, tempfile
-_KO_TTF = os.path.join(tempfile.gettempdir(), "NotoSansCJKKR-Regular.ttf")
-if not os.path.exists(_KO_TTF):
-    try:
-        from fontTools.ttLib import TTCollection
-        _ttc = TTCollection("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc")
-        _ttc.fonts[1].save(_KO_TTF)
-    except Exception:
-        _KO_TTF = None
-
 matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'sans-serif']
 
 st.set_page_config(
@@ -66,7 +55,7 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
 """, unsafe_allow_html=True)
 
 # ── Data ────────────────────────────────────────────────────────────────────
-DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/consulting-260531-final.csv"
+DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/consulting-260531-updated.csv"
 
 @st.cache_data(ttl=300)
 def load_data():
@@ -119,16 +108,8 @@ def generate_pdf(row):
     """Generate a one-page PDF report and return as bytes."""
     from matplotlib import font_manager as fm
 
-    # Korean font: register TTF by family name — works with PDF backend
-    if _KO_TTF:
-        fm.fontManager.addfont(_KO_TTF)
-        _ko_family = fm.FontProperties(fname=_KO_TTF).get_name()
-    else:
-        _ko_family = "DejaVu Sans"
-
     def kw(size=9, weight="normal"):
-        """Return text kwargs using the Korean-capable font family."""
-        return {"fontfamily": _ko_family, "fontsize": size, "fontweight": weight}
+        return {"fontsize": size, "fontweight": weight}
 
     hw_cols = ["HW01", "HW02", "HW03", "HW04", "HW05"]
     acc   = float(row["Accuracy"])
@@ -151,16 +132,11 @@ def generate_pdf(row):
     BG = "#f7f5f2"
 
     # ── Header ────────────────────────────────────────────────────────────────
+    ename = str(row.get("Ename", row["Name"])).strip()  # English name for PDF
     fig.text(0.05, 0.96, "Pronunciation Assessment Report",
              fontsize=15, fontweight="bold", color="#1a1a2e", va="top")
-    # Combine into single string: label in DejaVu, name in Noto CJK
     fig.text(0.05, 0.915,
-             f"Student: ",
-             fontsize=9, color="#555", va="top")
-    fig.text(0.122, 0.915, str(row['Name']),
-             color="#555", va="top", **kw(9))
-    fig.text(0.195, 0.915,
-             f"  |  Meeting: {row['Meeting']}  |  Midterm: {row['Midterm']}",
+             f"Student: {ename}   |   Meeting: {row['Meeting']}   |   Midterm: {row['Midterm']}",
              fontsize=9, color="#555", va="top")
     fig.add_artist(plt.Line2D([0.05, 0.97], [0.895, 0.895],
                               transform=fig.transFigure, color="#1a1a2e", linewidth=1))
@@ -182,22 +158,21 @@ def generate_pdf(row):
             )
             ax.add_patch(rect)
             ax.text(i * 1.1 + 0.475, 0.58, val,
-                    ha="center", va="center", fontsize=9, fontweight="bold", color="#ffffff")
+                    ha="center", va="center", color="#ffffff", **kw(9, "bold"))
             lbl_color = "#ffdd57" if text_color(bg) == "#ffffff" else "#444"
             ax.text(i * 1.1 + 0.475, 0.18, lbl,
-                    ha="center", va="center", fontsize=5.5, color=lbl_color, fontweight="600")
+                    ha="center", va="center", color=lbl_color, **kw(5.5))
 
         ax.set_xlim(-0.1, n * 1.1)
         ax.set_ylim(0, 1)
         ax.axis("off")
-        ax.set_title(title, fontsize=8, fontweight="bold", color="#1a1a2e",
-                     loc="left", pad=3)
+        ax.set_title(title, color="#1a1a2e", loc="left", pad=3, **kw(8, "bold", **kw(8, "normal")))
 
     # ── Row 0: Scores table (left) + Radar chart (right, spans rows 0-2) ─────
     ax_scores = fig.add_subplot(gs[0:2, 0])
     ax_scores.set_facecolor(BG)
     ax_scores.axis("off")
-    ax_scores.set_title("Scores", fontsize=8, fontweight="bold", color="#1a1a2e", loc="left", pad=3)
+    ax_scores.set_title("Scores", color="#1a1a2e", loc="left", pad=3, **kw(8, "bold", **kw(8, "normal")))
 
     score_items  = ["Midterm"] + hw_cols + ["HW-Song-extra"]
     score_values = [str(row["Midterm"])] + \
@@ -262,8 +237,7 @@ def generate_pdf(row):
         ax_radar.set_yticks([])
         ax_radar.set_xticks([])
         ax_radar.spines["polar"].set_visible(False)
-        ax_radar.set_title("Overall Pronunciation Profile",
-                           fontsize=8, fontweight="bold", color="#1a1a2e", pad=10)
+        ax_radar.set_title("Overall Pronunciation Profile", color="#1a1a2e", pad=10, **kw(8, "bold"))
 
     # ── Heatmap rows ──────────────────────────────────────────────────────────
     ax_v = fig.add_subplot(gs[2, 0])
@@ -279,7 +253,7 @@ def generate_pdf(row):
     ax_leg = fig.add_subplot(gs[3:5, 1])
     ax_leg.set_facecolor(BG)
     ax_leg.axis("off")
-    ax_leg.set_title("Rating Scale", fontsize=8, fontweight="bold", color="#1a1a2e", loc="left", pad=3)
+    ax_leg.set_title("Rating Scale", color="#1a1a2e", loc="left", pad=3, **kw(8, "bold"))
     legend_labels = {"L": "Low", "ML": "Mid-Low", "M": "Mid", "MH": "Mid-High", "H": "High"}
     for idx, (rating, desc) in enumerate(legend_labels.items()):
         bg = rating_color(rating)
@@ -310,8 +284,8 @@ def generate_pdf(row):
     ax_notes.text(0.01, 0.5, notes_text,
                   ha="left", va="center", fontsize=8,
                   color="#333", transform=ax_notes.transAxes, wrap=True)
-    ax_notes.set_title("Instructor Notes", fontsize=8, fontweight="bold",
-                        color="#1a1a2e", loc="left", pad=3)
+    ax_notes.set_title("Instructor Notes",
+                        color="#1a1a2e", loc="left", pad=3, **kw(8, "bold"))
 
     # ── Save to bytes ─────────────────────────────────────────────────────────
     buf = io.BytesIO()
