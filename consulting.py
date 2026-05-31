@@ -132,7 +132,7 @@ def generate_pdf(row):
     BG = "#f7f5f2"
 
     # ── Header ────────────────────────────────────────────────────────────────
-    ename = str(row.get("Ename", row["Name"])).strip()  # English name for PDF
+    ename = str(row["Ename"] if "Ename" in row.index and pd.notna(row["Ename"]) and str(row["Ename"]).strip() else row["Name"]).strip()
     fig.text(0.05, 0.96, "Pronunciation Assessment Report",
              fontsize=15, fontweight="bold", color="#1a1a2e", va="top")
     fig.text(0.05, 0.915,
