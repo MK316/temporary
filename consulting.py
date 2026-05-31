@@ -9,7 +9,7 @@ matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'NanumGothic', 'sans-serif'
 
 st.set_page_config(
     page_title="Pronunciation Assessment Dashboard",
-    page_icon="🎙️",
+    page_icon="🌱",
     layout="wide"
 )
 
