@@ -154,7 +154,7 @@ else:
     # Header + logout button
     col_title, col_btn = st.columns([5, 1])
     with col_title:
-        st.markdown("## 🎙️ Pronunciation Assessment Dashboard")
+        st.markdown("## 🌱 Pronunciation Assessment Dashboard")
     with col_btn:
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("🔒 Log out"):
