@@ -55,9 +55,9 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
 """, unsafe_allow_html=True)
 
 # ── Data ────────────────────────────────────────────────────────────────────
-DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/consulting-260531-final.csv"
+DATA_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/consulting-260531-updated.csv"
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=0)
 def load_data():
     import requests
     from io import StringIO
@@ -132,7 +132,13 @@ def generate_pdf(row):
     BG = "#f7f5f2"
 
     # ── Header ────────────────────────────────────────────────────────────────
-    ename = str(row["Ename"] if "Ename" in row.index and pd.notna(row["Ename"]) and str(row["Ename"]).strip() else row["Name"]).strip()
+    # Use Ename (English name) for PDF to avoid font issues
+    try:
+        ename = str(row["Ename"]).strip()
+        if not ename or ename.lower() == "nan":
+            ename = str(row["Name"]).strip()
+    except Exception:
+        ename = str(row["Name"]).strip()
     fig.text(0.05, 0.96, "Pronunciation Assessment Report",
              fontsize=15, fontweight="bold", color="#1a1a2e", va="top")
     fig.text(0.05, 0.915,
