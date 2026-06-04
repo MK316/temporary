@@ -1,0 +1,32 @@
+﻿SID,Name,Ename,Passcode,Meeting,Midterm,HW01,HW02,HW03,HW04,HW05,HW-Song-extra,V-Tense-lax-i,V-Tense-lax-u,V-Ash,V-Open-o,V-Vowel-A,V-Schwa,V-R-colored,V-Vowel-length,C-Sibilants,C-Aspiration,C-Tapping,C-Fricatives,C-R-L,P-Stress,P-Accenting,P-Thought-grouping,Notes,Accuracy,Fluency,Intelligibility
+1,김도연,Kim DY,j1rlaehdus,J1,125,Completed,Completed,Completed,Completed,Completed,0.5,M,M,M,M,M,ML,M,M,ML,M,M,MH,MH,M,L,M,"i-palatalization, reading style",60,60,65
+2,김수현,Kim SH,j1rlatngus,J1,154,Completed,Completed,Completed,Completed,Completed,1,ML,M,M,M,M,L,M,M,M,ML,M,ML,M,M,M,M,"p-f, b-v, Vowel insertion, syllable-timed, phonological rule (upload)",65,65,70
+3,김수환,Kim SH,j1rlatnghks,J1,105,Completed,Completed,Completed,Completed,Completed,2,MH,MH,L,MH,MH,MH,L,ML,MH,MH,L,MH,MH,MH,MH,MH,"BA, r-dropping, diction as teacher",85,85,90
+4,김한일,Kim HI,j1rlagksdlf,J1,109,Completed,Completed,Completed,Completed,Completed,1,L,L,L,L,M,M,M,L,L,L,L,ML,L,L,L,L,"Morphemes, grammar, V-insertion",40,45,45
+5,이다영,Lee DY,j1dlekdud,J1,92,Completed,Completed,Completed,Completed,Completed,2,M,M,M,ML,M,M,M,M,M,M,M,MH,MH,M,M,M,"V-insertion, vowel space, spelling pronunciation, th-pron, monotone",75,80,75
+6,김민지,Kim MJ,j1rlaalswl,J1,157,Completed,Completed,Completed,Completed,Completed,0.5,M,M,MH,M,MH,MH,MH,MH,M,M,MH,MH,MH,MH,M,MH,"rhythm, tense-lax",80,85,85
+7,황정민,Hwang JM,j1ghkdwjdals,J1,127,Completed,Completed,Completed,Completed,Completed,0.5,L,L,ML,ML,ML,L,M,M,ML,ML,MH,M,ML,L,L,L,"syllable-timed, function words, r",60,65,65
+8,김현서,Kim HS,j1rlagustj,J1,166,Completed,Completed,Completed,Completed,Completed,0.5,M,M,M,M,M,ML,MH,MH,M,MH,MH,MH,MH,ML,ML,MH,"Stress, syllable-timed rhythm, intonatioin, rule(good-news)",75,80,75
+9,정예원,Jeong YW,j1wjddPdnjs,J1,200,Completed,Completed,Completed,Completed,Completed,0.5,ML,ML,ML,ML,ML,ML,M,M,ML,M,M,M,ML,ML,ML,M,"C-articulation, syllable boundaries, diction",60,65,60
+10,탁서영,Tak SY,j1xkrtjdud,J1,109,Completed,Completed,Completed,Completed,Completed,0.5,L,L,ML,ML,ML,ML,ML,ML,ML,ML,ML,ML,ML,ML,ML,ML,"ts, diphthongs, diction",55,60,60
+11,고나연,Ko NY,j1rhskdus,J1,123,Completed,Completed,Completed,Completed,Completed,2,ML,ML,MH,MH,MH,MH,MH,MH,MH,ML,MH,MH,MH,ML,L,MH,"Vowel clarity, p-f-z",75,80,85
+12,최준위,Choi JW,j1chlwnsdnl,J1,134,Completed,Completed,Completed,Completed,Completed,2,MH,MH,MH,MH,ML,MH,MH,MH,MH,MH,MH,MH,MH,ML,ML,M,"Vowel clarity, p-f-z, diction",75,80,85
+13,박가희,Park KH,j2qkrrkgml,J2,102,Completed,Completed,Completed,Completed,Completed,1.5,L,L,L,M,L,L,M,M,L,ML,ML,L,M,L,L,L,"final C, s-z-f-v, reading, stressed vowels",55,60,60
+14,고유진,Ko YJ,j2rhdbwls,J2,120,Completed,Completed,Completed,Completed,Completed,1,MH,MH,M,M,MH,MH,MH,MH,MH,ML,MH,MH,MH,MH,MH,ML,"Unstressed p, final pitch could be lower, low vowels for vowel space, intonation",75,85,80
+15,김유진,Kim YJ,j2rladbwls,J2,118,Completed,Completed,Completed,Completed,Completed,0.5,M,L,L,L,M,ML,M,ML,ML,ML,M,M,L,L,ML,ML,"function words, secondary gestures (rounding), rounded vowels (lip rounding)",65,65,60
+16,김지온,Kim JO,j2rlawldhs,J2,115,Completed,Completed,Completed,Completed,Completed,1.5,M,MH,MH,MH,MH,MH,MH,MH,M,MH,MH,MH,MH,ML,ML,MH,"diction,stress contrast,  function words, presentation, volume, reading style",80,80,80
+17,남다솜,Nam DS,j2skaektha,J2,181,Completed,Completed,Completed,Completed,Completed,2,M,MH,ML,MH,ML,ML,MH,ML,MH,MH,MH,M,MH,M,ML,MH,"lip closing, unstressed syllables, vowel space",80,85,85
+19,조수민,Cho SM,j2whtnals,J2,157,Completed,Completed,Completed,Completed,Completed,2,ML,ML,L,ML,L,ML,ML,L,ML,ML,M,M,ML,L,ML,ML,"vowel space, monotone, diction ",65,75,75
+28,정승효,Jeong SH,j2wjdtmdgy,J2,142,Completed,Completed,Completed,Completed,Completed,0.5,ML,ML,M,M,L,M,M,M,M,L,M,M,M,L,L,M,"heart,diphthong,  diction,stress contrast,  function words, presentation, volume, reading style",70,75,70
+30,최가현,Choi KH,j2chlrkgus,j2,119,Completed,Completed,Completed,Completed,Completed,2,M,M,L,M,L,M,M,M,ML,M,M,M,M,L,L,L,"Reading,rhythm,  diction",70,65,60
+18,이유진,Lee YJ,j4dldbwls,J4,116,Completed,Completed,Completed,Completed,Completed,0.5,L,L,ML,ML,L,L,ML,L,ML,L,ML,ML,L,L,L,L,"lip closing, diphthongs, reading, delivery, unstressed Cs",55,60,55
+20,강지영,Kang JY,j4rkdwldud,J4,153,Completed,Completed,Completed,Completed,Completed,1.5,MH,MH,M,MH,MH,MH,MH,ML,MH,MH,MH,MH,MH,ML,ML,M,function words,85,85,90
+21,남정민,Nam JM,j4skawjdals,J4,139,Completed,Completed,Completed,Completed,Completed,1,M,ML,M,ML,M,M,ML,L,M,M,M,M,M,ML,L,L,"function words, word-by-word reading, thought groups & sound linking, 'aphantasia'",70,65,65
+22,오소민,Oh SM,j4dhthals,J4,112,Completed,Completed,Completed,Completed,Completed,0.5,M,ML,ML,M,ML,ML,M,M,M,M,M,ML,M,L,L,ML,"function words, diphthong, f-v, vowel space, ts, final C unclear",65,65,60
+23,우한성,Woo HS,j4dngkstjd,J4,167,Completed,Completed,Completed,Completed,Completed,1.5,M,M,ML,L,ML,M,M,M,M,ML,M,M,M,M,M,M,"diphthong, using higher space only problem (back vowels)",70,75,75
+24,이다윤,Lee DY,j4dlekdbs,J4,131,Completed,Completed,Completed,Completed,Completed,0.5,ML,ML,L,M,L,L,M,L,M,M,M,M,M,L,M,M,"function words, vowel space, diction, vowel insertion(have), rhythm",60,70,70
+25,장한결,Jang HK,j4wkdgksruf,J4,93,Completed,Completed,Completed,Completed,Completed,1,ML,ML,ML,M,M,M,M,M,ML,ML,M,M,M,L,M,M,"C-cluster(shrink), instead-solitary-results, good practice",75,80,80
+31,최동빈,Choi DB,j4chlehdqls,J4,107,Completed,Completed,Completed,Completed,Completed,0.5,MH,MH,MH,MH,ML,MH,MH,ML,MH,ML,MH,MH,MH,ML,ML,M,"function words, clarity and delivery",85,85,80
+26,박정휴,Park JH,j1qkrwjdgb,J1,103,Completed,Completed,Completed,Completed,Completed,0.5,M,M,L,M,L,ML,M,L,M,ML,M,M,M,L,L,M,"monotone, function words, sound linking",65,65,70
+27,전유찬,Jeon YC,j4wjsdbcks,J4,84,Completed,Completed,Completed,Completed,Completed,0.5,L,L,ML,ML,L,L,M,M,M,ML,M,ML,M,L,L,L,"function words, sound linking ('relationship'), reading style",55,65,55
+29,조상규,Cho SK,j4whtkdrb,J4,107,Completed,Completed,Completed,Completed,Completed,0.5,L,L,ML,ML,L,L,M,M,M,ML,M,ML,M,L,L,L,"algorithem, function words, reading",55,65,55
