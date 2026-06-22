@@ -272,8 +272,16 @@ if submitted:
                 <td style="padding:8px;">70 and above</td>
             </tr>
             <tr>
+                <td style="padding:8px;">D+</td>
+                <td style="padding:8px;">65 and above</td>
+            </tr>
+            <tr>
+                <td style="padding:8px;">D</td>
+                <td style="padding:8px;">60 and above</td>
+            </tr>
+            <tr>
                 <td style="padding:8px;">F</td>
-                <td style="padding:8px;">Below 70</td>
+                <td style="padding:8px;">Below 60</td>
             </tr>
         </table>
         </div>
