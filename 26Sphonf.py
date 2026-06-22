@@ -171,7 +171,7 @@ if submitted:
     st.markdown(
         f"""
         <div style="padding:16px; border-radius:12px; border:1px solid #ddd; margin-bottom:12px;">
-        <b>3) 기말고사(40%)</b><br>
+        <b>3) 기말고사(40%) + 그룹활동 점수</b><br>
         {fmt(student['Final_Exam'])} + {fmt(student['Group_Activities'])} 
         = <b>{fmt(student['Final_Score'])} points</b> 
         <span style="color:gray;">(total 80 points)</span>
