@@ -16,10 +16,8 @@ st.caption("학번 뒷자리 5숫자와 Passcode를 입력하세요.")
 # ==============================
 # CSV URL
 # ==============================
-CSV_URL = "여기에_GitHub_raw_CSV_URL을_넣으세요"
+CSV_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/26Sphonf.csv"
 
-# 예:
-# CSV_URL = "https://raw.githubusercontent.com/MK316/temporary/refs/heads/main/data/26Sphonf.csv"
 
 
 # ==============================
