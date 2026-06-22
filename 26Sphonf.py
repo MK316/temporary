@@ -48,10 +48,10 @@ except Exception as e:
 required_columns = [
     "Names", "SID", "Passcode",
     "Group1", "Group2",
-    "Written", "Transcription", "Midterm-Total",
+    "Written", "Transcription", "Midterm_Total",
     "Final_Exam", "Group_Activities", "Final_Score",
     "Assignments", "Attendance",
-    "midterm_30", "Final_40", "Total"
+    "Midterm_30", "Final_40", "Total"
 ]
 
 missing = [col for col in required_columns if col not in df.columns]
@@ -160,7 +160,7 @@ if submitted:
         <div style="padding:16px; border-radius:12px; border:1px solid #ddd; margin-bottom:12px;">
         <b>2) 중간고사(30%)</b><br>
         {fmt(student['Written'])} + {fmt(student['Transcription'])} 
-        = <b>{fmt(student['Midterm-Total'])} points</b> 
+        = <b>{fmt(student['Midterm_Total'])} points</b> 
         <span style="color:gray;">(total 100 points)</span>
         </div>
         """,
@@ -208,7 +208,7 @@ if submitted:
         <div style="padding:18px; border-radius:12px; border:2px solid #888; margin-bottom:16px;">
         <b>6) 총계</b><br><br>
         중간(30% 환산) + 기말(40% 환산) + 과제(20%) + 출석(10%)<br>
-        = {fmt(student['midterm_30'])} + {fmt(student['Final_40'])} 
+        = {fmt(student['Midterm_30'])} + {fmt(student['Final_40'])} 
         + {fmt(student['Assignments'])} + {fmt(student['Attendance'])}<br><br>
         <span style="font-size:22px;"><b>Total: {fmt(student['Total'])}</b></span>
         </div>
